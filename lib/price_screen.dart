@@ -2,14 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'coin_data.dart';
+import 'altcoin_data.dart';
+import 'dart:developer';
 
 class PriceScreen extends StatefulWidget {
+  PriceScreen({this.initialAtcoinData});
+  final initialAtcoinData;
+
   @override
   _PriceScreenState createState() => _PriceScreenState();
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  String selectedCurrency = 'USD';
+
+  String coinName;
+  String currency;
+  int handledCoinPrice;
+
+
+  @override
+  void initState() {
+    super.initState();
+    updateUI(widget.initialAtcoinData);
+  }
+
+  updateUI(dynamic altcoinData){
+    setState(() {
+      coinName = altcoinData['asset_id_base'];
+      currency = altcoinData['asset_id_quote'];
+      double coinPrice = altcoinData['rate'];
+      handledCoinPrice = coinPrice.toInt();
+    });
+  }
+
 
   DropdownButton<String> androidDropDownButton() {
     List<DropdownMenuItem<String>> dropDownItemsList = [];
@@ -21,12 +46,11 @@ class _PriceScreenState extends State<PriceScreen> {
       dropDownItemsList.add(listItem);
     }
     return DropdownButton<String>(
-      value: selectedCurrency,
+      value: currency,
       items: dropDownItemsList,
-      onChanged: (value) {
-        setState(() {
-          selectedCurrency = value;
-        });
+      onChanged: (value) async {
+        var altcoinData = await AltcoinData(currency: value).getAltcoinData();
+        updateUI(altcoinData);
       },
     );
   }
@@ -69,7 +93,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ? USD',
+                  '1 $coinName = $handledCoinPrice $currency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,

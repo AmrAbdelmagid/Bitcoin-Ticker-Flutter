@@ -6,10 +6,10 @@ import 'altcoin_data.dart';
 import 'dart:developer';
 
 class PriceScreen extends StatefulWidget {
-  PriceScreen({this.initialBTCData,this.initialETHData,this.initialLTCData});
-  final initialBTCData;
-  final initialETHData;
-  final initialLTCData;
+  PriceScreen({this.btcData,this.ethData,this.ltcData});
+  final btcData;
+  final ethData;
+  final ltcData;
 
   @override
   _PriceScreenState createState() => _PriceScreenState();
@@ -19,30 +19,40 @@ class _PriceScreenState extends State<PriceScreen> {
 
   String currency;
 
-  int handledCoinPrice1;
-  int handledCoinPrice2;
-  int handledCoinPrice3;
+  int handledBTCPrice;
+  int handledETHPrice;
+  int handledLTCPrice;
 
 
 
   @override
   void initState() {
     super.initState();
-    updateUI(widget.initialBTCData,widget.initialETHData,widget.initialLTCData);
+    updateUI(widget.btcData,widget.ethData,widget.ltcData);
   }
 
-  updateUI(dynamic initialBTCData, dynamic initialETHData, dynamic initialLTCData){
+  updateUI(dynamic btcData, dynamic ethData, dynamic ltcData){
     setState(() {
-      currency = initialBTCData['asset_id_quote'];
 
-      var coinPrice1 = initialBTCData['rate'];
-      handledCoinPrice1 = coinPrice1.toInt();
+      if (btcData == null || ethData == null || ltcData == null){
+        currency = 'USD';
+        handledBTCPrice = 0;
+        handledETHPrice = 0;
+        handledLTCPrice = 0;
+        return;
+      }
 
-      var coinPrice2 = initialETHData['rate'];
-      handledCoinPrice2 = coinPrice2.toInt();
+        currency = btcData['asset_id_quote'];
 
-      var coinPrice3 = initialLTCData['rate'];
-      handledCoinPrice3 = coinPrice3.toInt();
+        var btcPrice = btcData['rate'];
+        handledBTCPrice = btcPrice.toInt();
+
+        var ethPrice = ethData['rate'];
+        handledETHPrice = ethPrice.toInt();
+
+        var ltcPrice = ltcData['rate'];
+        handledLTCPrice = ltcPrice.toInt();
+
     });
   }
 
@@ -51,7 +61,7 @@ class _PriceScreenState extends State<PriceScreen> {
     List<DropdownMenuItem<String>> dropDownItemsList = [];
     for (String currency in currenciesList) {
       DropdownMenuItem<String> listItem = DropdownMenuItem(
-        child: Text(currency),
+        child: Text(currency,style: TextStyle(color: Colors.black),),
         value: currency,
       );
       dropDownItemsList.add(listItem);
@@ -59,6 +69,8 @@ class _PriceScreenState extends State<PriceScreen> {
     return DropdownButton<String>(
       value: currency,
       items: dropDownItemsList,
+      iconEnabledColor: Colors.black,
+      dropdownColor: Colors.amber,
       onChanged: (value) async {
         var initialBTCData = await AltcoinData().getAltcoinData(value,cryptoList[0]);
         var initialETHData = await AltcoinData().getAltcoinData(value,cryptoList[1]);
@@ -73,7 +85,7 @@ class _PriceScreenState extends State<PriceScreen> {
     for (String currency in currenciesList) {
       Text listItem = Text(
         currency,
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.black),
       );
       cupertinoItemsList.add(listItem);
     }
@@ -100,16 +112,16 @@ class _PriceScreenState extends State<PriceScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          buildPriceCard(coinName: cryptoList[0],handledCoinPrice: handledCoinPrice1),
-          buildPriceCard(coinName: cryptoList[1],handledCoinPrice: handledCoinPrice2),
-          buildPriceCard(coinName: cryptoList[2],handledCoinPrice: handledCoinPrice3),
+          buildPriceCard(coinName: cryptoList[0],handledCoinPrice: handledBTCPrice),
+          buildPriceCard(coinName: cryptoList[1],handledCoinPrice: handledETHPrice),
+          buildPriceCard(coinName: cryptoList[2],handledCoinPrice: handledLTCPrice),
           Container(
             height: 150.0,
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
-            color: Colors.lightBlue,
+            color: Colors.amber,
             child:
-                iOSCupertinoPicker(),
+                  Platform.isIOS ?  iOSCupertinoPicker() : androidDropDownButton(),
           ),
         ],
       ),
@@ -120,7 +132,7 @@ class _PriceScreenState extends State<PriceScreen> {
     return Padding(
           padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
           child: Card(
-            color: Colors.lightBlueAccent,
+            color: Colors.amber,
             elevation: 5.0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -132,7 +144,7 @@ class _PriceScreenState extends State<PriceScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20.0,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
             ),

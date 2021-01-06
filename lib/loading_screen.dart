@@ -1,6 +1,7 @@
 import 'package:bitcoin_ticker/price_screen.dart';
 import 'package:flutter/material.dart';
 import 'altcoin_data.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -8,6 +9,7 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+  Exception exception;
 
   @override
   void initState() {
@@ -16,19 +18,41 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void altcoinData() async {
-    AltcoinData altcoinData = AltcoinData();
-    var BTCdata = await altcoinData.getAltcoinData('USD','BTC');
-    var ETHdata = await altcoinData.getAltcoinData('USD','ETH');
-    var LTCdata = await altcoinData.getAltcoinData('USD','LTC');
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return PriceScreen(
-        initialBTCData: BTCdata,initialETHData: ETHdata,initialLTCData: LTCdata,
-      );
-    }));
+    try {
+      AltcoinData altcoinData = AltcoinData();
+      var initialBtcData = await altcoinData.getAltcoinData('EUR', 'BTC');
+      var initialEthData = await altcoinData.getAltcoinData('EUR', 'ETH');
+      var initialLtcData = await altcoinData.getAltcoinData('EUR', 'LTC');
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return PriceScreen(
+          btcData: initialBtcData,
+          ethData: initialEthData,
+          ltcData: initialLtcData,
+        );
+      }));
+    } catch (e) {
+      exception = e;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return (exception == null)
+        ? Scaffold(
+            body: Center(
+              child: SpinKitDualRing(
+                color: Colors.amber,
+                size: 100.0,
+              ),
+            ),
+          )
+        : Scaffold(
+            body: Center(
+              child: FlatButton(
+                child: Text('Check Your Internet then PRESS HERE'),
+                onPressed: altcoinData,
+              ),
+            ),
+          );
   }
 }

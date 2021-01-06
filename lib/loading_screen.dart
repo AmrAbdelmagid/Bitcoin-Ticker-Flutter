@@ -16,11 +16,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void altcoinData() async {
-    AltcoinData altcoinData = AltcoinData(currency: 'USD');
-    var data = await altcoinData.getAltcoinData();
+    AltcoinData altcoinData = AltcoinData();
+    var BTCdata = await altcoinData.getAltcoinData('USD','BTC');
+    var ETHdata = await altcoinData.getAltcoinData('USD','ETH');
+    var LTCdata = await altcoinData.getAltcoinData('USD','LTC');
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return PriceScreen(
-        initialAtcoinData: data,
+        initialBTCData: BTCdata,initialETHData: ETHdata,initialLTCData: LTCdata,
       );
     }));
   }
@@ -30,7 +32,3 @@ class _LoadingScreenState extends State<LoadingScreen> {
     return Container();
   }
 }
-
-// coinName = data['asset_id_base'];
-// currency = data['asset_id_quote'];
-// coinPrice = data['rate'];

@@ -1,4 +1,5 @@
 const List<String> currenciesList = [
+  'USD',
   'AUD',
   'BRL',
   'CAD',
@@ -18,7 +19,6 @@ const List<String> currenciesList = [
   'RUB',
   'SEK',
   'SGD',
-  'USD',
   'ZAR'
 ];
 

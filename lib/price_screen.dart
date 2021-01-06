@@ -80,7 +80,12 @@ class _PriceScreenState extends State<PriceScreen> {
     return CupertinoPicker(
       selectionOverlay: null,
       itemExtent: 32.0,
-      onSelectedItemChanged: (selectedIndex) {},
+      onSelectedItemChanged: (selectedIndex) async {
+        var initialBTCData = await AltcoinData().getAltcoinData(currenciesList[selectedIndex],cryptoList[0]);
+        var initialETHData = await AltcoinData().getAltcoinData(currenciesList[selectedIndex],cryptoList[1]);
+        var initialLTCData = await AltcoinData().getAltcoinData(currenciesList[selectedIndex],cryptoList[2]);
+        updateUI(initialBTCData,initialETHData,initialLTCData);
+      },
       children: cupertinoItemsList,
     );
   }
@@ -104,7 +109,7 @@ class _PriceScreenState extends State<PriceScreen> {
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
             child:
-                Platform.isIOS ? iOSCupertinoPicker() : androidDropDownButton(),
+                iOSCupertinoPicker(),
           ),
         ],
       ),
